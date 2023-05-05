@@ -490,7 +490,7 @@ async function getStats() {
       ) {
         return (
           <div>
-            <span className="get-token">WANNA WIN? GET POOL <a href="https://app.uniswap.org">
+            <span className="get-token">WANNA WIN? GET wBAN <a href="https://uniswap.org">
               <span title="Uniswap"><img src="images/uniswap.png" className="token-icon"/></span></a>
               </span>
           </div>
@@ -951,10 +951,10 @@ const completeAward = async () => {
                                     </td>
                                     <td style={{ textAlign: "right" }}>
                                       {" "}
-                                      {/* <img
-                                        src="/images/pool.png"
+                                      <img
+                                        src="/images/ban.webp"
                                         className="pool-token"
-                                      ></img> */}
+                                      ></img>
                                       &nbsp;
                                       <span className="token-text">{NumberChop(ethers.utils.formatUnits(balances[0].TOKEN,18))}</span>
                                     </td>
@@ -1096,11 +1096,11 @@ const completeAward = async () => {
                       <table className="table-inputamount">
                         <tr>
                           <td>
-                            {/* <img
-                              src="./images/pool.png"
+                            <img
+                              src="./images/ban.webp"
                               className="poolicon"
                               alt="TOKEN"
-                            />{" "} */}
+                            />{" "}
                             wBAN &nbsp;
                           </td>
                           <td style={{ textAlign: "right" }}>
@@ -1215,7 +1215,7 @@ const completeAward = async () => {
 
                   </td>
                 <td style={{ textAlign: "right" }}>&nbsp;&nbsp;
-                <img src="images/pool.png" className="winner-icon"></img>&nbsp;
+                <img src="images/ban.webp" className="winner-icon"></img>&nbsp;
                 <span className="winner-amount">{NumberChop(winner.amount/1e18)}</span></td></tr>)
               })}
               </table><br></br>Awarded {TimeAgo(prizeMap.timestamp)}
@@ -1230,17 +1230,17 @@ const completeAward = async () => {
               <table className="winner-table">
               <tr><td>TVL</td>
               <td style={{ textAlign: "right" }}>
-              {/* <img src="images/pool.png" className="winner-icon"></img> */}
+              <img src="images/ban.webp" className="winner-icon"></img>
                 &nbsp;{Separator(parseInt(poolInfo?.prizepool))}</td>
               </tr>
-              <tr><td>Prize APR</td>
+              {/* <tr><td>Prize APR</td>
               <td style={{ textAlign: "right" }}>{(100*(52.14*((poolInfo.prizepool -
                                   poolInfo.TICKETTotalSupply -
-                                  poolInfo.SPONSORSHIPTotalSupply)) / poolInfo.TICKETTotalSupply)).toFixed(2)}%</td></tr>
+                                  poolInfo.SPONSORSHIPTotalSupply)) / poolInfo.TICKETTotalSupply)).toFixed(2)}%</td></tr> */}
 
               <tr><td>Cumulative Prize&nbsp;&nbsp;&nbsp;</td>
               <td style={{ textAlign: "right" }}>
-              {/* <img src="images/pool.png" className="winner-icon"></img>&nbsp; */}
+              <img src="images/ban.webp" className="winner-icon"></img>&nbsp;
 
                 {Separator(parseInt((prizeGross/1e18)))}</td></tr>
                 </table><br></br>
@@ -1268,7 +1268,7 @@ const completeAward = async () => {
 
                   </td>
                 <td style={{ textAlign: "right" }}>&nbsp;&nbsp;&nbsp;&nbsp;
-                {/* <img src="images/pool.png" className="winner-icon"></img>&nbsp; */}
+                <img src="images/ban.webp" className="winner-icon"></img>&nbsp;
 
                 <span className="winner-amount">{Separator(parseInt(sponsor.balance/1e18))}</span></td></tr>)
               })}
@@ -1299,11 +1299,11 @@ const completeAward = async () => {
                     <table className="table-inputamount">
                       <tr>
                         <td>
-                          {/* <img
-                            src="./images/pool.png"
+                          <img
+                            src="./images/ban.webp"
                             className="icon"
                             alt="TICKET"
-                          />{" "} */}
+                          />{" "}
                           TICKET &nbsp;
                         </td>
                         <td style={{ textAlign: "right" }}>
