@@ -144,6 +144,8 @@ function Dapp() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalFocus, setModalFocus] = useState("claim");
   const [allowances, setAllowances] = useState({});
+  const [winnerDrawDisplay, setWinnerDrawDisplay] = useState(0);
+
 
   const [inputAmount, setInputAmount] = useState("");
   const [validAddress, setValidAddress] = useState(true);
@@ -247,26 +249,52 @@ async function getStats() {
   setIsModalOpen(true);
 
 }
+  
+function changeWinnerDraw(change) {
+  setWinnerDrawDisplay(winnerDrawDisplay + change);
+}
   async function getWinners() {
     console.log("getting winners");
     let data = await GetSubgraphData("POLYGON");
-    setGraphInfo(data);
-    console.log("got graph info", data);
-    let drawId = data.data.prizePools[0].currentPrizeId
-    let awardedTimestamp = data.data.prizePools[0].prizes[0].awardedTimestamp
-    let winnerMap = data.data.prizePools[0].prizes
-    winnerMap = winnerMap[0].awardedControlledTokens
-    let winnerData = {
-      timestamp: awardedTimestamp,
-      drawId: drawId,
-      winnerMap: winnerMap
-    }
-    console.log(winnerData)
-    setPrizeMap(winnerData);
+    let processedWinners = processWinners(data)
+    setPrizeMap(processedWinners)
+    setWinnerDrawDisplay(0);
     setModalFocus("winners");
     setIsModalOpen(true);
   }
 
+
+  function processWinners(graph) {
+    let winnerMap = graph.data.prizePools[0].prizes.reverse();
+    let draws = winnerMap.length;
+    // remove first two test draws
+    draws = draws - 2;
+    let winHistory = [];
+    
+    winnerMap.forEach((mappedDraw) => {
+      if(mappedDraw.awardedTimestamp !== null)  {
+
+      winHistory.push({
+        timestamp: mappedDraw.awardedTimestamp,
+        drawId: draws,
+        winnerMap: mappedDraw.awardedControlledTokens,
+      });}
+      draws -= 1;
+    });
+    console.log(winHistory)
+    winHistory.totalGive = 0
+    winHistory.forEach(drawNumber => {
+        let charity = drawNumber.winnerMap.filter(player=>player.winner === "0x7cf2ebb5ca55a8bd671a020f8bdbaf07f60f26c1" || player.winner === "0x441380e9631af49f9436b6b272a83b63ca355796")
+        let charityamt = charity[0]?.amount 
+        winHistory.totalGive += parseInt(charityamt) / 1e18
+    })
+    console.log("DONATED",winHistory.totalGive)
+
+    // remove first two test draws
+    winHistory.splice(winHistory.length - 2, winHistory.length - 1);
+    return winHistory;
+
+  }
   async function getPlayers() {
     // console.log("getting sponsors");
     let data = await GetSubgraphData("ETHEREUM");
@@ -1197,30 +1225,102 @@ const completeAward = async () => {
               )}
               <br></br>
             </div>
-          )}
-          {modalFocus === "winners" && <div><div
+          )}{modalFocus === "winners" && (
+            <div>
+              <div
                 className="closeModal close"
                 onClick={() => closeModal()}
               ></div>
-              
-              <span>DRAW {prizeMap.drawId} WINNERS</span><br></br><br></br><table className="winner-table">
-              
-              {prizeMap.winnerMap.map(winner=>{ return(
-                <tr><td>{winner.winner.startsWith("0x7cf2eb") ? <span>GC</span> :
-                <img src="images/trophy.png" className="winner-icon"></img>}</td>
-                
-                <td><span className="winner-address">
-                  {winner.winner.substring(0,8)}&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                  {winner.winner.toLowerCase() === address?.toLowerCase() && <span>&nbsp;<img src="/images/poolerson.png" className="myaddress" /> </span>}
+              <span className="title-modal">
+                {/* DRAW {prizeMap[winnerDrawDisplay].drawId} WINNERS */}
+                DRAW WINNERS
+              </span>
+              <br />
+              <br />
+              <table className="winner-table">
+                {prizeMap[winnerDrawDisplay].winnerMap.map((winner) => {
+                  return (
+                    <tr>
+                      <td>
+                        {winner.winner.startsWith("0x7cf2eb") || winner.winner.startsWith("0x44138") ? (
+                          <img
+                            title="Charity address"
+                            src="images/charityIcon.png"
+                            alt=""
+                            className="winner-icon"
+                          />
+                        ) : (
+                          <img
+                            src="images/trophy.png"
+                            className="winner-icon"
+                            alt=""
+                          ></img>
+                        )}
+                      </td>
 
-                  </td>
-                <td style={{ textAlign: "right" }}>&nbsp;&nbsp;
-                <img src="images/ban.webp" className="winner-icon"></img>&nbsp;
-                <span className="winner-amount">{NumberChop(winner.amount/1e18)}</span></td></tr>)
-              })}
-              </table><br></br>Awarded {TimeAgo(prizeMap.timestamp)}
-              
-              </div>}
+                      <td>
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          href={"https://etherscan.io/address/" + winner.winner}
+                          className="winner-address"
+                        >
+                          {winner.winner.substring(0, 8)}
+                        </a>
+                        {winner.winner.toLowerCase() ===
+                          address?.toLowerCase() && (
+                          <span>
+                            &nbsp;
+                            <img
+                              src="/images/poolerson.png"
+                              className="myaddress"
+                              alt="U"
+                            />{" "}
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span className="winner-amount">
+                          <img
+                            src="images/ban.webp"
+                            alt=""
+                            className="pool-token"
+                          />
+                          {NumberChop(winner.amount / 1e18)}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </table>
+              <span className="footer-modal">
+                {winnerDrawDisplay > 0 ? (
+                  <img
+                    src="images/arrow-left.svg"
+                    className="pointer"
+                    alt="prev"
+                    onClick={() => changeWinnerDraw(-1)}
+                  />
+                ) : (
+                  <span>&emsp;</span>
+                )}
+                &nbsp;&nbsp;&nbsp;&nbsp; Awarded{" "}
+                {TimeAgo(prizeMap[winnerDrawDisplay].timestamp)}
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              {winnerDrawDisplay < prizeMap.length - 1 ? (
+                <img
+                  src="images/arrow-right.svg"
+                  className="pointer"
+                  alt="next"
+                  onClick={() => changeWinnerDraw(1)}
+                />
+              ) : (
+                <span>&emsp;</span>
+              )}
+            </div>
+          )}
               {modalFocus === "stats" && <div><div
                 className="closeModal close"
                 onClick={() => closeModal()}
@@ -1228,7 +1328,7 @@ const completeAward = async () => {
               
               <span>STATS</span><br></br><br></br>
               <table className="winner-table">
-              <tr><td>TVL</td>
+              <tr><td><span className="smaller-stats">TVL</span></td>
               <td style={{ textAlign: "right" }}>
               <img src="images/ban.webp" className="winner-icon"></img>
                 &nbsp;{Separator(parseInt(poolInfo?.prizepool))}</td>
@@ -1238,7 +1338,7 @@ const completeAward = async () => {
                                   poolInfo.TICKETTotalSupply -
                                   poolInfo.SPONSORSHIPTotalSupply)) / poolInfo.TICKETTotalSupply)).toFixed(2)}%</td></tr> */}
 
-              <tr><td>Cumulative Prize&nbsp;&nbsp;&nbsp;</td>
+              <tr><td><span className="smaller-stats">Cumulative Prize</span>&nbsp;&nbsp;&nbsp;</td>
               <td style={{ textAlign: "right" }}>
               <img src="images/ban.webp" className="winner-icon"></img>&nbsp;
 

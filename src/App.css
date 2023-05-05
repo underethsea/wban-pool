@@ -795,6 +795,9 @@ a.dropdown-item:hover {
 .main-table {
   background-color:#f8f6cc;
 }
+.smaller-stats {
+  font-size:12px;
+}
 .top-title-text{
   padding-bottom:2px;
   font-size:13px;
