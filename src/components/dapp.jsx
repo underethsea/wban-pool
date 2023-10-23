@@ -1079,10 +1079,11 @@ const completeAward = async () => {
                 <>AWARD PRIZES <br /><br />
                 
                 {awardStatus?.canStart === true && <span>
-                <button
-                      onClick={() => {{chain?.id !==137 ? startAward():toast("wrong chain")}
-                      className="myButton purple-hover"
-                    >STEP 1 of 2 START AWARD</button></span>}
+               <button
+    onClick={() => chain?.id !== 137 ? startAward() : toast("wrong chain")}
+    className="myButton purple-hover"
+>
+STEP 1 of 2 START AWARD</button></span>}
                     {awardStatus?.canComplete === true && <span>
 
                     <button
